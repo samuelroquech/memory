@@ -1,12 +1,9 @@
-import _ from 'lodash';
+import '../css/style.css'
 
-function component() {
-  const element = document.createElement('div');
+import Vue from 'vue'
+import App from './components/App.vue'
 
-  // Lodash, currently included via a script, is required for this line to work
-  element.innerHTML = _.join(['Hello', 'webpack'], ' ');
-
-  return element;
-}
-
-document.body.appendChild(component());
+new Vue({
+  el: '#app',
+  render: h => h(App)
+})
