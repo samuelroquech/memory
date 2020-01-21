@@ -1,74 +1,70 @@
 <template>
-  <div>
-    <h1 class="justify-center text-4xl my-5 text-center">{{title}}</h1>
-    <div class="flex w-full justify-center">
-      <form class="my-10 block w-6/12 justify-center">
-        <div>
-          <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="topic"
-          >
-            <span>Tema:</span>
-            <strong>
-              <abbr title="required">*</abbr>
-            </strong>
-          </label>
-          <input
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            type="text"
-            id="topic"
-            name="topic"
-          />
+    <div>
+        <nav class="navbar navbar-inverse navbar-fixed-top">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Memory</a>
+                </div>
+                <div id="navbar" class="navbar-collapse collapse">
+                    <ul class="nav navbar-nav">
+                        <router-link tag="li" to="/" exact>
+                            <a>Home</a>
+                        </router-link>
+                        <router-link tag="li" to="/add">
+                            <a>Añadir</a>
+                        </router-link>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <router-view :items="items" @items="addItem = $event"></router-view>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <hr>
+
+                    <footer>
+                        <p>© 2020 Memory App.</p>
+                    </footer>
+                </div>
+            </div>
         </div>
-        <div>
-          <label
-            class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-            for="text"
-          >
-            <span>Texto:</span>
-            <strong>
-              <abbr title="required">*</abbr>
-            </strong>
-          </label>
-          <textarea
-            class="appearance-none h-56 block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            id="text"
-            name="text"
-          ></textarea>
-        </div>
-        <div class="md:flex md:items-center">
-          <div class="w-1/3"></div>
-          <div class="w-2/3 text-right">
-            <button
-              class="shadow bg-purple-500 hover:bg-purple-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
-              type="button"
-              v-on:click="saveText"
-            >Enviar</button>
-          </div>
-        </div>
-      </form>
     </div>
-  </div>
 </template>
 
 <script>
 export default {
-  name: "default",
+  name: 'App',
   data() {
     return {
-      title: "Añade Temas"
+      items: ""
     };
   },
-  methods: {
-    saveText: function(event) {
-      // `this` inside methods points to the Vue instance
-      alert("Hello " + this.title + "!");
-      // `event` is the native DOM event
-      if (event) {
-        alert(event.target.tagName);
-      }
+  mounted() {
+    if(localStorage.items) {
+      this.items = JSON.parse(localStorage.items);
+    }else{
+      this.items = [];
+    }
+  }, 
+  watch: {
+    items(newItem) {
+      localStorage.items = JSON.stringify(newItem);
     }
   }
-};
+}
 </script>
 
+<style>
+    body {
+        padding-top: 50px;
+    }
+</style>
