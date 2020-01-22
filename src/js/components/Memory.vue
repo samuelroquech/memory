@@ -1,146 +1,99 @@
 <template>
   <div>
-    <h1 class="justify-center text-4xl my-5 text-center">{{title}}</h1>
-
+    <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
     <div class="w-full flex justify-center">
       <div class="w-1/2">
-        <div>
-          <vuetable ref="vuetable"
-            :api-mode="false"
-            :fields="fields"
-            :per-page="perPage"
-            :data-manager="dataManager"
-            pagination-path="pagination"
-            @vuetable:pagination-data="onPaginationData"
-            class="w-full"
-          >
-            <div slot="actions" slot-scope="props">
-              <button 
-                class="ui small button" 
-                @click="onActionClicked('edit-item', props.rowData)"
+        <form class="w-full">
+          <div class="flex flex-wrap -mx-3 mb-2">
+            <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="grid-city"
+                >Tema</label
               >
-                <i class="edit icon">e</i>e
-              </button>
-              <button 
-                class="ui small button" 
-                @click="onActionClicked('delete-item', props.rowData)"
-              >
-                <i class="delete icon">b</i>b
-              </button>
+              <input
+                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                type="text"
+              />
             </div>
-          </vuetable>
-        </div>
-        
-        <div class="w-full my-5">
-          <vuetable-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage" :css="css.pagination"></vuetable-pagination>
-        </div>
+            <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
+              <label
+                class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+                for="grid-state"
+                >Precisión</label
+              >
+              <div class="relative">
+                <select
+                  class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                >
+                  <option value="10">10%</option>
+                  <option value="20">20%</option>
+                  <option value="30">30%</option>
+                  <option value="40">40%</option>
+                  <option value="50">50%</option>
+                  <option value="60">60%</option>
+                  <option value="70">70%</option>
+                  <option value="80">80%</option>
+                  <option value="90">90%</option>
+                  <option value="99">99%</option>
+                </select>
+                <div
+                  class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+                >
+                  <svg
+                    class="fill-current h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+        <swiper class="my-20" :options="swiperOption">
+          <swiper-slide v-for="(item, index) in items" :key="index">
+            <div class="w-full px-10">
+              {{ item.text }}
+            </div>
+          </swiper-slide>
+          <div class="swiper-button-prev" slot="button-prev"></div>
+          <div class="swiper-button-next" slot="button-next"></div>
+        </swiper>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import {Vuetable, VuetablePagination} from "vuetable-2";
-
+import "swiper/dist/css/swiper.css";
+import { swiper, swiperSlide } from "vue-awesome-swiper";
 import _ from "lodash";
 
 export default {
   name: "default",
-  props: ['items'],
+  props: ["items"],
   components: {
-    Vuetable,
-    VuetablePagination
+    swiper,
+    swiperSlide
   },
   data() {
     return {
       title: "Estudiar",
-      fields: [
-        {
-          name:'tags',
-          title:'Tema',
-          sortField: 'tags',
-          titleClass: 'w-1/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
-        },{
-          name:'text',
-          title:'Texto',
-          sortField: 'text',
-          titleClass: 'w-2/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
-        },
-        {
-          name:'actions',
-          title:'Actions',
-          titleClass: 'w-1/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
-        }
-      ],
-      perPage: 3,
-      data : [],
-      css: {
-        pagination: {
-          wrapperClass: 'flex list-reset border border-grey-light rounded w-auto',
-          activeClass: 'active text-white bg-teal-500',
-          disabledClass: 'disabled',
-          pageClass: 'block text-blue border-r border-grey-light px-3 py-2',
-          linkClass: 'icon item',
-          paginationClass: 'ui bottom attached segment grid',
-          paginationInfoClass: 'left floated left aligned six wide column',
-          dropdownClass: 'ui search dropdown',
-          icons: {
-            first: 'angle double left icon',
-            prev: 'left chevron icon',
-            next: 'right chevron icon',
-            last: 'angle double right icon',
-          }
+      swiperOption: {
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
         }
       }
     };
   },
   watch: {
-    items: function(val){
-      this.$refs.vuetable.refresh()
-    }
+    items: function(val) {}
   },
-  methods: {
-    onPaginationData(paginationData) {
-      this.$refs.pagination.setPaginationData(paginationData);
-    },
-    onChangePage(page) {
-      this.$refs.vuetable.changePage(page);
-    },
-    dataManager(sortOrder, pagination) {
-     
-      if (this.items.length < 1) return;
-      let local = _.reverse(this.items);
-      
-      _.map(local, (o) => { o.text = _.truncate(o.text, {'length': 40, 'separator': ' ','omission': ' [...]'})});
-
-      if (sortOrder.length > 0) {
-        local = _.orderBy(
-          local,
-          sortOrder[0].sortField,
-          sortOrder[0].direction
-        );
-      }
-
-      pagination = this.$refs.vuetable.makePagination(
-        local.length,
-        this.perPage
-      );
-      
-      let from = pagination.from - 1;
-      let to = from + this.perPage;
-
-      return {
-        pagination: pagination,
-        data: _.slice(local, from, to)
-      };
-    },
-    onActionClicked(action, data) {
-      console.log("slot actions: on-click", data.name);
-    }
-  }
+  methods: {}
 };
 </script>
-

@@ -1,18 +1,18 @@
 const path = require("path");
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
-const {CleanWebpackPlugin} = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const VueLoaderPlugin = require("vue-loader/lib/plugin");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  mode: 'development',
+  mode: "development",
   entry: {
-    app: './src/js/index.js',
-    print: './src/js/print.js',
+    app: "./src/js/index.js",
+    print: "./src/js/print.js"
   },
-  devtool: 'inline-source-map',
+  devtool: "inline-source-map",
   output: {
-    filename: '[name].bundle.js',
+    filename: "[name].bundle.js",
     path: path.resolve(__dirname, "dist")
   },
   devServer: {
@@ -22,7 +22,6 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        exclude: /node_modules/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -31,30 +30,27 @@ module.exports = {
             }
           },
           {
-            loader: 'css-loader',
-            options: {importLoaders: 1},
+            loader: "css-loader",
+            options: { importLoaders: 1 }
           },
           {
-            loader: 'postcss-loader',
+            loader: "postcss-loader",
             options: {
               config: {
-                path: __dirname + '/postcss.config.js'
+                path: __dirname + "/postcss.config.js"
               }
-            },
+            }
           }
         ]
       },
       {
         test: /\.vue$/,
-        use: 'vue-loader'
+        use: "vue-loader"
       },
       {
         test: /\.js?$/,
-        loader: 'babel-loader',
-        exclude: file => (
-          /node_modules/.test(file) &&
-          !/\.vue\.js/.test(file)
-        )
+        loader: "babel-loader",
+        exclude: file => /node_modules/.test(file) && !/\.vue\.js/.test(file)
       }
     ]
   },
@@ -62,11 +58,11 @@ module.exports = {
     new CleanWebpackPlugin(),
     new VueLoaderPlugin(),
     new MiniCssExtractPlugin({
-      filename: "styles.css",
+      filename: "styles.css"
     }),
     new HtmlWebpackPlugin({
-      filename: 'index.html',
-      template: 'src/template/index.html'
+      filename: "index.html",
+      template: "src/template/index.html"
     })
   ]
 };
