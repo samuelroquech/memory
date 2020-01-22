@@ -3,6 +3,7 @@ import Router from 'vue-router'
 
 import ListItems  from './components/ListItems.vue'
 import AddItems   from './components/AddItems.vue'
+import Memory   from './components/Memory.vue'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
             path: '/add',
             name: 'AddItems',
             component: AddItems
+        },
+        {
+            path: '/memory',
+            name: 'Memory',
+            component: Memory
         }
     ],
     linkActiveClass: "active",

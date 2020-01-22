@@ -53,7 +53,7 @@ export default {
   },
   data() {
     return {
-      title: "Lista de Temas",
+      title: "Estudiar",
       fields: [
         {
           name:'tags',
@@ -75,7 +75,7 @@ export default {
           dataClass: 'border px-4 py-2'
         }
       ],
-      perPage: 10,
+      perPage: 3,
       data : [],
       css: {
         pagination: {
