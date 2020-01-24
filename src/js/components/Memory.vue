@@ -8,19 +8,24 @@
             <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
-                for="grid-city"
-              >Tema</label>
-              <input
-                class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                type="text"
-                v-model="filter"
-              />
+                for="grid-state"
+                >Filtros</label
+              >
+              <div class="relative">
+                <vue-tags-input
+                  class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  v-model="tag"
+                  :tags="filter"
+                  @tags-changed="newTags => (filter = newTags)"
+                />
+              </div>
             </div>
             <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="grid-state"
-              >Precisión</label>
+                >Precisión</label
+              >
               <div class="relative">
                 <select
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -61,7 +66,11 @@
       <div class="w-4/5">
         <swiper class="my-20 relative" :options="swiperOption">
           <swiper-slide v-for="(item, index) in itemsFiltered" :key="index">
-            <memory-item :item="item" :percent="percent" :filter="filter"></memory-item>
+            <memory-item
+              :item="item"
+              :percent="percent"
+              :filter="filter"
+            ></memory-item>
           </swiper-slide>
           <div
             class="mem-swiper-prev absolute left-0 top-0 z-10 text-teal-500 hover:text-teal-400"
@@ -107,6 +116,7 @@ import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import _ from "lodash";
 import memoryItem from "./Memory-item.vue";
+import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
   name: "default",
@@ -114,7 +124,8 @@ export default {
   components: {
     swiper,
     swiperSlide,
-    memoryItem
+    memoryItem,
+    VueTagsInput
   },
   data() {
     return {
@@ -126,29 +137,41 @@ export default {
         }
       },
       percent: "0.8",
-      filter: ""
+      tag: "",
+      filter: [],
+      itemsFiltered: []
     };
   },
-  watch: {
-    items: function(val) {}
+  mounted() {
+    this.itemsFiltered = this.fItemsFiltered();
   },
-  computed: {
-    itemsFiltered: function() {
+  watch: {
+    items: function(val) {
+      this.itemsFiltered = this.fItemsFiltered();
+    },
+    filter: function() {
+      this.itemsFiltered = this.fItemsFiltered();
+    }
+  },
+  computed: {},
+  methods: {
+    fItemsFiltered: function() {
       let t = this;
-
-      let array = _.filter(_.reverse(this.items), function(o) {
+      console.log("dsadas");
+      let array = _.filter(_.reverse(t.items), function(o) {
         if (t.filter.length > 0) {
-          return o.tags.toLowerCase().indexOf(t.filter.toLowerCase()) !== -1;
+          //return o.tags.toLowerCase().indexOf(t.filter.toLowerCase()) !== -1;
+          return t.filter.every((i => v => (i = o.tags.indexOf(v, i) + 1))(0));
         } else {
           return true;
         }
+        return false;
       });
 
       console.log(array);
 
       return array;
     }
-  },
-  methods: {}
+  }
 };
 </script>
