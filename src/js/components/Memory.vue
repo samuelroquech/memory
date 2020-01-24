@@ -9,33 +9,34 @@
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="grid-city"
-                >Tema</label
-              >
+              >Tema</label>
               <input
                 class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                 type="text"
+                v-model="filter"
               />
             </div>
             <div class="w-full md:w-1/3 px-3 mb-6 md:mb-0">
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="grid-state"
-                >Precisión</label
-              >
+              >Precisión</label>
               <div class="relative">
                 <select
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+                  v-model="percent"
                 >
-                  <option value="10">10%</option>
-                  <option value="20">20%</option>
-                  <option value="30">30%</option>
-                  <option value="40">40%</option>
-                  <option value="50">50%</option>
-                  <option value="60">60%</option>
-                  <option value="70">70%</option>
-                  <option value="80">80%</option>
-                  <option value="90">90%</option>
-                  <option value="99">99%</option>
+                  <option value="0.99">1%</option>
+                  <option value="0.9">10%</option>
+                  <option value="0.8">20%</option>
+                  <option value="0.7">30%</option>
+                  <option value="0.6">40%</option>
+                  <option value="0.5">50%</option>
+                  <option value="0.4">60%</option>
+                  <option value="0.3">70%</option>
+                  <option value="0.2" selected>80%</option>
+                  <option value="0.1">90%</option>
+                  <option value="0.01">99%</option>
                 </select>
                 <div
                   class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
@@ -54,14 +55,47 @@
             </div>
           </div>
         </form>
-        <swiper class="my-20" :options="swiperOption">
-          <swiper-slide v-for="(item, index) in items" :key="index">
-            <div class="w-full px-10">
-              {{ item.text }}
-            </div>
+      </div>
+    </div>
+    <div class="w-full flex justify-center">
+      <div class="w-4/5">
+        <swiper class="my-20 relative" :options="swiperOption">
+          <swiper-slide v-for="(item, index) in itemsFiltered" :key="index">
+            <memory-item :item="item" :percent="percent" :filter="filter"></memory-item>
           </swiper-slide>
-          <div class="swiper-button-prev" slot="button-prev"></div>
-          <div class="swiper-button-next" slot="button-next"></div>
+          <div
+            class="mem-swiper-prev absolute left-0 top-0 z-10 text-teal-500 hover:text-teal-400"
+            slot="button-prev"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              class="fill-current"
+            >
+              <path
+                style="width:100%"
+                d="M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm3 5.753l-6.44 5.247 6.44 5.263-.678.737-7.322-6 7.335-6 .665.753z"
+              />
+            </svg>
+          </div>
+          <div
+            class="mem-swiper-next absolute right-0 top-0 z-10 text-teal-500 hover:text-teal-400"
+            slot="button-next"
+          >
+            <svg
+              width="24"
+              height="24"
+              xmlns="http://www.w3.org/2000/svg"
+              fill-rule="evenodd"
+              clip-rule="evenodd"
+              class="fill-current"
+            >
+              <path
+                d="M12 0c6.623 0 12 5.377 12 12s-5.377 12-12 12-12-5.377-12-12 5.377-12 12-12zm0 1c6.071 0 11 4.929 11 11s-4.929 11-11 11-11-4.929-11-11 4.929-11 11-11zm-3 5.753l6.44 5.247-6.44 5.263.678.737 7.322-6-7.335-6-.665.753z"
+              />
+            </svg>
+          </div>
         </swiper>
       </div>
     </div>
@@ -72,27 +106,48 @@
 import "swiper/dist/css/swiper.css";
 import { swiper, swiperSlide } from "vue-awesome-swiper";
 import _ from "lodash";
+import memoryItem from "./Memory-item.vue";
 
 export default {
   name: "default",
   props: ["items"],
   components: {
     swiper,
-    swiperSlide
+    swiperSlide,
+    memoryItem
   },
   data() {
     return {
       title: "Estudiar",
       swiperOption: {
         navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
+          nextEl: ".mem-swiper-next",
+          prevEl: ".mem-swiper-prev"
         }
-      }
+      },
+      percent: "0.8",
+      filter: ""
     };
   },
   watch: {
     items: function(val) {}
+  },
+  computed: {
+    itemsFiltered: function() {
+      let t = this;
+
+      let array = _.filter(_.reverse(this.items), function(o) {
+        if (t.filter.length > 0) {
+          return o.tags.toLowerCase().indexOf(t.filter.toLowerCase()) !== -1;
+        } else {
+          return true;
+        }
+      });
+
+      console.log(array);
+
+      return array;
+    }
   },
   methods: {}
 };

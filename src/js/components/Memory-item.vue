@@ -1,8 +1,14 @@
 <template>
   <div>
-    <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
-    <div class="w-full flex justify-center">
-      HELLO
+    <h2 class="justify-center text-2xl mb-5 text-center">{{ item.tags }}</h2>
+    <div v-if="show" class="w-full flex justify-center">{{ item.text }}</div>
+    <div v-if="!show" class="w-full flex justify-center">{{ compressedText }}</div>
+
+    <div class="w-full flex justify-center pt-5">
+      <button
+        class="bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs px-4 rounded justify-center"
+        v-on:click="showHide"
+      >VER</button>
     </div>
   </div>
 </template>
@@ -14,25 +20,60 @@ import _ from "lodash";
 
 export default {
   name: "default",
-  props: ["items"],
-  components: {
-    swiper,
-    swiperSlide
-  },
+  props: ["item", "percent", "filter"],
   data() {
     return {
       title: "Estudiar",
-      swiperOption: {
-        navigation: {
-          nextEl: ".swiper-button-next",
-          prevEl: ".swiper-button-prev"
-        }
-      }
+      compressedText: "",
+      show: false
     };
   },
-  watch: {
-    items: function(val) {}
+  mounted() {
+    this.compressText();
   },
-  methods: {}
+  watch: {
+    percent: function() {
+      this.compressText();
+    },
+    filter: function() {
+      this.compressText();
+    }
+  },
+  methods: {
+    showHide() {
+      this.show = !this.show;
+    },
+    compressText() {
+      let array = _.split(this.item.text, " ");
+      let regex = /^[\S]*[0-9]+[\S]*$/;
+      let limit = 3;
+      let values = [];
+
+      array.forEach((element, i) => {
+        if (element.length > limit) {
+          values.push({
+            index: i,
+            text: element
+          });
+        }
+      });
+
+      values = _.shuffle(values);
+
+      if (values.length > 1) {
+        let stopShuffle = Math.trunc(+this.percent * values.length) + 1;
+
+        //console.log(values);
+
+        for (let i = 0; stopShuffle > i; i++) {
+          const element = values[i];
+          if (element.index > 0) {
+            array[element.index] = element.text.replace(/./g, "_");
+          }
+        }
+      }
+      this.compressedText = array.join(" ");
+    }
+  }
 };
 </script>
