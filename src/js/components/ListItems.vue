@@ -112,9 +112,21 @@ export default {
     dataManager(sortOrder, pagination) {
      
       if (this.items.length < 1) return;
-      let local = _.reverse(this.items);
+
+      console.log(this.items);
+
+      let local = _.reverse(JSON.parse(JSON.stringify(this.items)));
       
-      _.map(local, (o) => { o.text = _.truncate(o.text, {'length': 40, 'separator': ' ','omission': ' [...]'})});
+      _.map(local, (o) => { 
+        const tags = o.tags;
+        
+        o.tags = [];
+        _.map(tags, (u) => { 
+          o.tags.push(u.text);
+        });
+        o.tags = _.join(o.tags,", ");
+        o.text = _.truncate(o.text, {'length': 40, 'separator': ' ','omission': ' [...]'})
+      });
 
       if (sortOrder.length > 0) {
         local = _.orderBy(

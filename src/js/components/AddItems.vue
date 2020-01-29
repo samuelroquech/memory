@@ -14,11 +14,11 @@
               <abbr title="required">*</abbr>
             </strong>
           </label>
-          <input
-            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-            type="text"
-            id="topic"
-            v-model="topic"
+          <vue-tags-input
+            class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
+            v-model="tag"
+            :tags="topic"
+            @tags-changed="newTags => (topic = newTags)"
           />
         </div>
         <div>
@@ -52,13 +52,21 @@
 </template>
 
 <script>
+
+import VueTagsInput from "@johmun/vue-tags-input";
+
+
 export default {
   name: "default",
   props: ['items'],
+  components: {
+    VueTagsInput
+  },
   data() {
     return {
       title: "Añade Temas",
-      topic: "",
+      tag: "",
+      topic: [],
       text: "",
     };
   },
@@ -79,6 +87,12 @@ export default {
         return;
       }
       this.addItem(this.topic, this.text);
+      this.clean();
+    },
+    clean: function(){
+      this.topic = [];
+      this.text = "";
+      this. tag = "";
     }
   }
 };

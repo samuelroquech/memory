@@ -157,8 +157,10 @@ export default {
   methods: {
     fItemsFiltered: function() {
       let t = this;
-      console.log("dsadas");
-      let array = _.filter(_.reverse(t.items), function(o) {
+
+      let local = _.reverse(JSON.parse(JSON.stringify(this.items)));
+
+      let array = _.filter(local, function(o) {
         if (t.filter.length > 0) {
           //return o.tags.toLowerCase().indexOf(t.filter.toLowerCase()) !== -1;
           return t.filter.every((i => v => (i = o.tags.indexOf(v, i) + 1))(0));
@@ -167,8 +169,6 @@ export default {
         }
         return false;
       });
-
-      console.log(array);
 
       return array;
     }

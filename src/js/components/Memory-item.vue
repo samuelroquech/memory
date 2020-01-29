@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="justify-center text-2xl mb-5 text-center">{{ item.tags }}</h2>
+    <h2 class="justify-center text-2xl mb-5 text-center">{{ compressedTags }}</h2>
     <div v-if="show" class="w-full flex justify-center">{{ item.text }}</div>
     <div v-if="!show" class="w-full flex justify-center">{{ compressedText }}</div>
 
@@ -25,11 +25,13 @@ export default {
     return {
       title: "Estudiar",
       compressedText: "",
+      compressedTags: "",
       show: false
     };
   },
   mounted() {
     this.compressText();
+    this.compressTags();
   },
   watch: {
     percent: function() {
@@ -43,11 +45,23 @@ export default {
     showHide() {
       this.show = !this.show;
     },
+
+    compressTags(){
+      let tagsText = [];
+
+      console.log(this.item.tags);
+      _.map(this.item.tags, (u) => { 
+        tagsText.push(u.text);
+      });
+
+      this.compressedTags = _.join(tagsText,", ");
+    },
+
     compressText() {
       let array = _.split(this.item.text, " ");
       let regex = /^[\S]*[0-9]+[\S]*$/;
       let limit = 3;
-      let values = [];
+      let values = []; 
 
       array.forEach((element, i) => {
         if (element.length > limit) {
