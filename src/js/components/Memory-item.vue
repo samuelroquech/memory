@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div >
     <h2 class="justify-center text-2xl mb-5 text-center">{{ compressedTags }}</h2>
     <div v-if="show" class="w-full flex justify-center">{{ item.text }}</div>
-    <div v-if="!show" class="w-full flex justify-center">{{ compressedText }}</div>
+    <div v-if="!show" class="w-full flex justify-center"><p v-html="compressedText"></p></div>
 
     <div class="w-full flex justify-center pt-5">
       <button
@@ -25,6 +25,7 @@ export default {
     return {
       title: "Estudiar",
       compressedText: "",
+      fullText: "",
       compressedTags: "",
       show: false
     };
@@ -36,9 +37,13 @@ export default {
   watch: {
     percent: function() {
       this.compressText();
+      this.compressTags();
+
     },
     filter: function() {
       this.compressText();
+      this.compressTags();
+
     }
   },
   methods: {
@@ -82,7 +87,7 @@ export default {
         for (let i = 0; stopShuffle > i; i++) {
           const element = values[i];
           if (element.index > 0) {
-            array[element.index] = element.text.replace(/./g, "_");
+            array[element.index] = '<span title="'+element.text+'" class="cursor-pointer">'+ element.text.replace(/./g, "_")+"</span>";
           }
         }
       }

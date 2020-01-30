@@ -73,7 +73,7 @@
             ></memory-item>
           </swiper-slide>
           <div
-            class="mem-swiper-prev absolute left-0 top-0 z-10 text-teal-500 hover:text-teal-400"
+            class="mem-swiper-prev absolute left-0 top-0 text-teal-500 hover:text-teal-400 h-8 w-8 z-10 overflow-hidden"
             slot="button-prev"
           >
             <svg
@@ -89,7 +89,7 @@
             </svg>
           </div>
           <div
-            class="mem-swiper-next absolute right-0 top-0 z-10 text-teal-500 hover:text-teal-400"
+            class="mem-swiper-next absolute right-0 top-0 text-teal-500 hover:text-teal-400 h-8 w-8 z-10 overflow-hidden"
             slot="button-next"
           >
             <svg
@@ -154,6 +154,7 @@ export default {
     }
   },
   computed: {},
+
   methods: {
     fItemsFiltered: function() {
       let t = this;
@@ -162,13 +163,13 @@ export default {
 
       let array = _.filter(local, function(o) {
         if (t.filter.length > 0) {
-          //return o.tags.toLowerCase().indexOf(t.filter.toLowerCase()) !== -1;
-          return t.filter.every((i => v => (i = o.tags.indexOf(v, i) + 1))(0));
-        } else {
-          return true;
+          var found = _.unionBy(t.filter,o.tags, 'text');
+          return found.length == o.tags.length;
         }
-        return false;
+        return true;
       });
+
+      console.log(array);
 
       return array;
     }
