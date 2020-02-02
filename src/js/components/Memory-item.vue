@@ -1,8 +1,10 @@
 <template>
-  <div >
-    <h2 class="justify-center text-2xl mb-5 text-center">{{ compressedTags }}</h2>
-    <div v-if="show" class="w-full flex justify-center">{{ item.text }}</div>
-    <div v-if="!show" class="w-full flex justify-center"><p v-html="compressedText"></p></div>
+  <div>
+    <h2 class="justify-center text-2xl mb-5 text-center" v-html="compressedTags"></h2>
+    <div v-if="show" class="w-full flex justify-center" v-html="noCompressedText"></div>
+    <div v-if="!show" class="w-full flex justify-center">
+      <p v-html="compressedText"></p>
+    </div>
 
     <div class="w-full flex justify-center pt-5">
       <button
@@ -25,6 +27,7 @@ export default {
     return {
       title: "Estudiar",
       compressedText: "",
+      noCompressedText: "",
       fullText: "",
       compressedTags: "",
       show: false
@@ -38,12 +41,10 @@ export default {
     percent: function() {
       this.compressText();
       this.compressTags();
-
     },
     filter: function() {
       this.compressText();
       this.compressTags();
-
     }
   },
   methods: {
@@ -51,25 +52,26 @@ export default {
       this.show = !this.show;
     },
 
-    compressTags(){
+    compressTags() {
       let tagsText = [];
 
       console.log(this.item.tags);
-      _.map(this.item.tags, (u) => { 
+      _.map(this.item.tags, u => {
         tagsText.push(u.text);
       });
 
-      this.compressedTags = _.join(tagsText,", ");
+      this.compressedTags = _.join(tagsText, ", ");
     },
 
     compressText() {
-      let array = _.split(this.item.text, " ");
+      this.noCompressedText = this.item.text.replace(/\r?\n/g, " <br /> ");
+      let array = _.split(this.noCompressedText, " ");
       let regex = /^[\S]*[0-9]+[\S]*$/;
       let limit = 3;
-      let values = []; 
+      let values = [];
 
       array.forEach((element, i) => {
-        if (element.length > limit) {
+        if (element.length > limit && element != "<br />") {
           values.push({
             index: i,
             text: element
@@ -87,7 +89,12 @@ export default {
         for (let i = 0; stopShuffle > i; i++) {
           const element = values[i];
           if (element.index > 0) {
-            array[element.index] = '<span title="'+element.text+'" class="cursor-pointer">'+ element.text.replace(/./g, "_")+"</span>";
+            array[element.index] =
+              '<span title="' +
+              element.text +
+              '" class="cursor-pointer">' +
+              element.text.replace(/./g, "_") +
+              "</span>";
           }
         }
       }
