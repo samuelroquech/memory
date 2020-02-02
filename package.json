@@ -7,8 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "webpack-dev-server --open -D",
     "prod": "webpack ",
-    "dev": "webpack -D",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d dist",
+    "dev": "webpack -D"
   },
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
   "bugs": {
     "url": "https://github.com/samuelroquech/memory/issues"
   },
-  "homepage": "https://github.com/samuelroquech/memory#readme",
+  "homepage" : "https://samuelroquech.github.io/memory/",
   "devDependencies": {
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.1",
