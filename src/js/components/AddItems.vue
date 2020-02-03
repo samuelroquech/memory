@@ -2,8 +2,7 @@
   <div>
     <h1 class="justify-center text-4xl my-5 text-center">{{title}}</h1>
     <div class="flex w-full justify-center">
-      <form v-on:submit.prevent="saveText"
-        class="my-10 block w-6/12 justify-center">
+      <form v-on:submit.prevent="saveText" class="my-10 block w-6/12 justify-center">
         <div>
           <label
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -52,13 +51,11 @@
 </template>
 
 <script>
-
 import VueTagsInput from "@johmun/vue-tags-input";
 
-
 export default {
-  name: "default",
-  props: ['items'],
+  name: "addItems",
+  props: ["items"],
   components: {
     VueTagsInput
   },
@@ -67,32 +64,32 @@ export default {
       title: "Añade Temas",
       tag: "",
       topic: [],
-      text: "",
+      text: ""
     };
   },
   methods: {
-    addItem: function(tags, text){
+    addItem: function(tags, text) {
       console.log(this);
-      if(Array.isArray(this.items)){
+      if (Array.isArray(this.items)) {
         this.items.push({
-          tags : tags,
-          text : text
-        });  
-        this.$emit('addItem', this.items);
+          tags: tags,
+          text: text
+        });
+        this.$emit("addItem", this.items);
       }
     },
     saveText: function(event) {
-      if(this.topic == "" || this.text == ""){
+      if (this.topic == "" || this.text == "") {
         alert("Por favor, rellena todos los campos");
         return;
       }
       this.addItem(this.topic, this.text);
       this.clean();
     },
-    clean: function(){
+    clean: function() {
       this.topic = [];
       this.text = "";
-      this. tag = "";
+      this.tag = "";
     }
   }
 };
