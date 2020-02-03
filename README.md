@@ -3,7 +3,9 @@ Memory is an experimental web application written with Vue JS that help to memor
 
 The functionality is simple. You can insert text organized by tags and after that, you can start to study these text removing words.
 
-It posible choose a percentage of words removed (More percentage, more words removed)
+It posible choose a percentage of words removed (More percentage, more words removed).
+
+You can see working here -> [https://samuelroquech.github.io/memory/](https://samuelroquech.github.io/memory/)
 
 ## Technologies used
 - Javascript with VueJs as framework
