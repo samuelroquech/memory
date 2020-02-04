@@ -57,7 +57,6 @@ export default {
   mounted() {},
   watch: {},
   computed: {},
-
   methods: {
     importFile: function(e) {
       let f = e.target.files[0];
@@ -66,16 +65,14 @@ export default {
         var r = new FileReader();
         r.onload = function(e) {
           var contents = e.target.result;
-          var lines = contents.split("\n");
-
+          var lines = t.CSVToArray(contents);
           t.$parent.clearItems();
 
           for (var i = 0; i < lines.length; i++) {
-            let item = t.CSVtoArray(lines[i]);
+            let item = lines[i];
 
             let tags = [];
             let text = item[item.length - 1];
-            console.log(item);
             item.forEach((element, i) => {
               if (i != item.length - 1) {
                 tags.push({
@@ -96,29 +93,91 @@ export default {
         alert("Failed to load file");
       }
     },
-    CSVtoArray(text) {
-      var re_valid = /^\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*(?:,\s*(?:'[^'\\]*(?:\\[\S\s][^'\\]*)*'|"[^"\\]*(?:\\[\S\s][^"\\]*)*"|[^,'"\s\\]*(?:\s+[^,'"\s\\]+)*)\s*)*$/;
-      var re_value = /(?!\s*$)\s*(?:'([^'\\]*(?:\\[\S\s][^'\\]*)*)'|"([^"\\]*(?:\\[\S\s][^"\\]*)*)"|([^,'"\s\\]*(?:\s+[^,'"\s\\]+)*))\s*(?:,|$)/g;
-      // Return NULL if input string is not well formed CSV string.
-      if (!re_valid.test(text)) return null;
-      var a = []; // Initialize array to receive values.
-      text.replace(
-        re_value, // "Walk" the string using replace with callback.
-        function(m0, m1, m2, m3) {
-          // Remove backslash from \' in single quoted values.
-          if (m1 !== undefined) a.push(m1.replace(/\\'/g, "'"));
-          // Remove backslash from \" in double quoted values.
-          else if (m2 !== undefined) a.push(m2.replace(/\\"/g, '"'));
-          else if (m3 !== undefined) a.push(m3);
-          return ""; // Return empty string.
-        }
-      );
-      // Handle special case of empty last value.
-      if (/,\s*$/.test(text)) a.push("");
-      return a;
-    },
     exportFile: function() {
-      alert("Export");
+      this.ArrayToCsv();
+    },
+    ArrayToCsv(strDelimiter) {
+      strDelimiter = strDelimiter || ",";
+      let finalArray = [];
+      this.items.forEach(element => {
+        let array = _.map(element.tags, "text");
+        array.push(element.text);
+        finalArray.push(array);
+      });
+      if (finalArray.length) {
+        this.exportToCsv("file.csv", finalArray);
+      }
+    },
+    CSVToArray(strData, strDelimiter) {
+      strDelimiter = strDelimiter || ",";
+
+      var objPattern = new RegExp(
+        "(\\" +
+          strDelimiter +
+          "|\\r?\\n|\\r|^)" +
+          '(?:"([^"]*(?:""[^"]*)*)"|' +
+          '([^"\\' +
+          strDelimiter +
+          "\\r\\n]*))",
+        "gi"
+      );
+      var arrData = [[]];
+      var arrMatches = null;
+      while ((arrMatches = objPattern.exec(strData))) {
+        var strMatchedDelimiter = arrMatches[1];
+        if (
+          strMatchedDelimiter.length &&
+          strMatchedDelimiter !== strDelimiter
+        ) {
+          arrData.push([]);
+        }
+        var strMatchedValue;
+        if (arrMatches[2]) {
+          strMatchedValue = arrMatches[2].replace(new RegExp('""', "g"), '"');
+        } else {
+          strMatchedValue = arrMatches[3];
+        }
+        arrData[arrData.length - 1].push(strMatchedValue);
+      }
+      return arrData;
+    },
+    exportToCsv(filename, rows) {
+      var processRow = function(row) {
+        var finalVal = "";
+        for (var j = 0; j < row.length; j++) {
+          var innerValue = row[j] === null ? "" : row[j].toString();
+          if (row[j] instanceof Date) {
+            innerValue = row[j].toLocaleString();
+          }
+          var result = innerValue.replace(/"/g, '""');
+          if (result.search(/("|,|\n)/g) >= 0) result = '"' + result + '"';
+          if (j > 0) finalVal += ",";
+          finalVal += result;
+        }
+        return finalVal + "\n";
+      };
+
+      var csvFile = "";
+      for (var i = 0; i < rows.length; i++) {
+        csvFile += processRow(rows[i]);
+      }
+
+      var blob = new Blob([csvFile], { type: "text/csv;charset=utf-8;" });
+      if (navigator.msSaveBlob) {
+        // IE 10+
+        navigator.msSaveBlob(blob, filename);
+      } else {
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+          var url = URL.createObjectURL(blob);
+          link.setAttribute("href", url);
+          link.setAttribute("download", filename);
+          link.style.visibility = "hidden";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+        }
+      }
     }
   }
 };
