@@ -1,7 +1,14 @@
 <template>
   <div>
-    <h2 class="justify-center text-2xl mb-5 text-center" v-html="compressedTags"></h2>
-    <div v-if="show" class="w-full flex justify-center" v-html="noCompressedText"></div>
+    <h2
+      class="justify-center text-2xl mb-5 text-center"
+      v-html="compressedTags"
+    ></h2>
+    <div
+      v-if="show"
+      class="w-full flex justify-center"
+      v-html="noCompressedText"
+    ></div>
     <div v-if="!show" class="w-full flex justify-center">
       <p v-html="compressedText"></p>
     </div>
@@ -10,7 +17,9 @@
       <button
         class="bg-teal-500 hover:bg-teal-400 text-white font-bold text-xs px-4 rounded justify-center"
         v-on:click="showHide"
-      >VER</button>
+      >
+        VER
+      </button>
     </div>
   </div>
 </template>
@@ -55,7 +64,6 @@ export default {
     compressTags() {
       let tagsText = [];
 
-      console.log(this.item.tags);
       _.map(this.item.tags, u => {
         tagsText.push(u.text);
       });

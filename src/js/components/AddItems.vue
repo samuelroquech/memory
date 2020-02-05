@@ -1,8 +1,11 @@
 <template>
   <div>
-    <h1 class="justify-center text-4xl my-5 text-center">{{title}}</h1>
+    <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
     <div class="flex w-full justify-center">
-      <form v-on:submit.prevent="saveText" class="my-10 block w-6/12 justify-center">
+      <form
+        v-on:submit.prevent="saveText"
+        class="my-10 block w-6/12 justify-center"
+      >
         <div>
           <label
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -42,7 +45,9 @@
             <button
               class="shadow bg-teal-500 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
               type="submit"
-            >Enviar</button>
+            >
+              Enviar
+            </button>
           </div>
         </div>
       </form>
@@ -52,6 +57,7 @@
 
 <script>
 import VueTagsInput from "@johmun/vue-tags-input";
+import _ from "lodash";
 
 export default {
   name: "addItems",
@@ -69,29 +75,89 @@ export default {
   },
   methods: {
     addItem: function(tags, text) {
-      console.log(this);
       if (Array.isArray(this.items)) {
-        this.items.push({
+        console.log({
           tags: tags,
           text: text
         });
+
+        this.$parent.addItem(
+          JSON.parse(
+            JSON.stringify({
+              tags: tags,
+              text: text
+            })
+          )
+        );
+
         this.$emit("addItem", this.items);
       }
     },
     saveText: function(event) {
-      if (this.topic == "" || this.text == "") {
+      if (_.startsWith(_.trim(this.text), "<?xml")) {
+        this.parseXML(_.trim(this.text));
+      } else if (this.topic == "" || this.text == "") {
         alert("Por favor, rellena todos los campos");
         return;
+      } else {
+        this.addItem(this.topic, this.text);
+        this.clean();
       }
-      this.addItem(this.topic, this.text);
-      this.clean();
     },
     clean: function() {
       this.topic = [];
       this.text = "";
       this.tag = "";
+    },
+    parseXML: function(text) {
+      let parser = new DOMParser();
+      let xmlDoc = parser.parseFromString(text, "text/xml");
+      this.$parent.clearItems();
+      let currentTags = [
+        {
+          text: "",
+          tiClasses: ["ti-valid"]
+        },
+        {
+          text: "",
+          tiClasses: ["ti-valid"]
+        },
+        {
+          text: "",
+          tiClasses: ["ti-valid"]
+        }
+      ];
+      let currentText = "";
+      xmlDoc.getElementsByTagName("texto")[0].childNodes.forEach(element => {
+        if (_.startsWith(element.nodeName, "#")) return;
+        if (element.classList.contains("titulo")) {
+          currentTags[0].text = element.innerHTML;
+        } else if (element.classList.contains("titulo_num")) {
+          if (currentText.length) {
+            this.addItem(currentTags, currentText);
+            currentText = "";
+          }
+          currentTags[0].text = element.innerHTML;
+        } else if (element.classList.contains("titulo_tit")) {
+          currentTags[1].text = element.innerHTML;
+        } else if (element.classList.contains("articulo")) {
+          if (currentText.length) {
+            this.addItem(currentTags, currentText);
+            currentText = "";
+          }
+          currentTags[2].text = element.innerHTML;
+        } else if (element.classList.contains("parrafo")) {
+          if (currentText.length) {
+            currentText += "\n";
+          }
+          currentText += element.innerHTML;
+        }
+      });
+
+      if (currentText.length) {
+        this.addItem(currentTags, currentText);
+      }
     }
   }
 };
 </script>
-

@@ -3,7 +3,7 @@
     <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
     <div class="w-full flex justify-center">
       <div class="w-1/2">
-        <form class="w-full">
+        <div class="w-full">
           <div class="flex flex-wrap -mx-3 mb-2">
             <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
               <label
@@ -14,9 +14,9 @@
               <div class="relative">
                 <vue-tags-input
                   class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  v-model="tag"
-                  :tags="filter"
-                  @tags-changed="newTags => (filter = newTags)"
+                  v-model.lazy="tag"
+                  :tags="tags"
+                  @tags-changed="newTags => (tags = newTags)"
                 />
               </div>
             </div>
@@ -29,7 +29,7 @@
               <div class="relative">
                 <select
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
-                  v-model="percent"
+                  v-model.lazy="percent"
                 >
                   <option value="0.99">1%</option>
                   <option value="0.9">10%</option>
@@ -37,9 +37,9 @@
                   <option value="0.7">30%</option>
                   <option value="0.6">40%</option>
                   <option value="0.5">50%</option>
-                  <option value="0.4">60%</option>
+                  <option value="0.4" selected>60%</option>
                   <option value="0.3">70%</option>
-                  <option value="0.2" selected>80%</option>
+                  <option value="0.2">80%</option>
                   <option value="0.1">90%</option>
                   <option value="0.01">99%</option>
                 </select>
@@ -59,17 +59,17 @@
               </div>
             </div>
           </div>
-        </form>
+        </div>
       </div>
     </div>
     <div class="w-full flex justify-center">
       <div class="w-4/5">
-        <swiper class="my-20 relative" :options="swiperOption">
+        <swiper class="my-20 relative" :options="swiperOption" ref="swiper">
           <swiper-slide v-for="(item, index) in itemsFiltered" :key="index">
             <memory-item
               :item="item"
               :percent="percent"
-              :filter="filter"
+              :filter="tags"
             ></memory-item>
           </swiper-slide>
           <div
@@ -136,9 +136,9 @@ export default {
           prevEl: ".mem-swiper-prev"
         }
       },
-      percent: "0.8",
+      percent: "0.6",
       tag: "",
-      filter: [],
+      tags: [],
       itemsFiltered: []
     };
   },
@@ -162,14 +162,12 @@ export default {
       let local = _.reverse(JSON.parse(JSON.stringify(this.items)));
 
       let array = _.filter(local, function(o) {
-        if (t.filter.length > 0) {
-          var found = _.unionBy(t.filter,o.tags, 'text');
+        if (t.tags.length > 0) {
+          var found = _.unionBy(t.tags, o.tags, "text");
           return found.length == o.tags.length;
         }
         return true;
       });
-
-      console.log(array);
 
       return array;
     }
