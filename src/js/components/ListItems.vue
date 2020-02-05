@@ -122,7 +122,8 @@ export default {
         
         o.tags = [];
         _.map(tags, (u) => { 
-          o.tags.push(u.text);
+          if(_.trim(u.text).length)
+            o.tags.push(u.text);
         });
         o.tags = _.join(o.tags,", ");
         o.text = _.truncate(o.text, {'length': 40, 'separator': ' ','omission': ' [...]'})

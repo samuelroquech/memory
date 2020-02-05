@@ -9,8 +9,7 @@
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="grid-state"
-                >Filtros</label
-              >
+              >Filtros</label>
               <div class="relative">
                 <vue-tags-input
                   class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -24,8 +23,7 @@
               <label
                 class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
                 for="grid-state"
-                >Precisión</label
-              >
+              >Precisión</label>
               <div class="relative">
                 <select
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
@@ -65,12 +63,8 @@
     <div class="w-full flex justify-center">
       <div class="w-4/5">
         <swiper class="my-20 relative" :options="swiperOption" ref="swiper">
-          <swiper-slide v-for="(item, index) in itemsFiltered" :key="index">
-            <memory-item
-              :item="item"
-              :percent="percent"
-              :filter="tags"
-            ></memory-item>
+          <swiper-slide v-for="(item, index) in fItemsFiltered" :key="index">
+            <memory-item :item="item" :percent="percent" :filter="tags"></memory-item>
           </swiper-slide>
           <div
             class="mem-swiper-prev absolute left-0 top-0 text-teal-500 hover:text-teal-400 h-8 w-8 z-10 overflow-hidden"
@@ -142,24 +136,11 @@ export default {
       itemsFiltered: []
     };
   },
-  mounted() {
-    this.itemsFiltered = this.fItemsFiltered();
-  },
-  watch: {
-    items: function(val) {
-      this.itemsFiltered = this.fItemsFiltered();
-    },
-    filter: function() {
-      this.itemsFiltered = this.fItemsFiltered();
-    }
-  },
-  computed: {},
-
-  methods: {
+  computed: {
     fItemsFiltered: function() {
       let t = this;
-
-      let local = _.reverse(JSON.parse(JSON.stringify(this.items)));
+      console.log(this.$parent.items);
+      let local = _.reverse(this.$parent.items);
 
       let array = _.filter(local, function(o) {
         if (t.tags.length > 0) {
@@ -169,8 +150,13 @@ export default {
         return true;
       });
 
-      return array;
+      return _.slice(array, 3);
+    },
+    getItems: function() {
+      return this.$parent.getItems();
     }
-  }
+  },
+
+  methods: {}
 };
 </script>
