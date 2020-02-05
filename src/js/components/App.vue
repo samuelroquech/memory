@@ -81,7 +81,8 @@ export default {
       items: []
     };
   },
-  mounted() {
+  created() {
+    console.log("HERE");
     if (localStorage.items) {
       this.items = JSON.parse(localStorage.items);
     }

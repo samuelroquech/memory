@@ -83,6 +83,7 @@ export default {
   },
   mounted() {
     this.data = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
+    console.log("Refreshing");
     this.$refs.vuetable.refresh();
   },
   methods: {

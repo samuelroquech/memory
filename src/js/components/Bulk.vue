@@ -3,9 +3,7 @@
     <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
     <div class="w-full flex justify-center">
       <div class="w-1/2">
-        <div
-          class="flex w-full h-screen items-start justify-center bg-grey-lighter"
-        >
+        <div class="flex w-full h-screen items-start justify-center bg-grey-lighter">
           <label
             class="w-64 m-5 flex flex-col items-center px-4 py-6 bg-white text-blue rounded-lg shadow-lg tracking-wide uppercase border border-blue cursor-pointer"
           >
@@ -135,7 +133,7 @@ export default {
     ArrayToCsv(strDelimiter) {
       strDelimiter = strDelimiter || ",";
       let finalArray = [];
-      this.items.forEach(element => {
+      this.$parent.items.forEach(element => {
         let array = _.map(element.tags, "text");
         array.push(element.text);
         finalArray.push(array);

@@ -15,6 +15,7 @@
                   class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   v-model.lazy="tag"
                   :tags="tags"
+                  :autocomplete-items="autocompleteTags"
                   @tags-changed="newTags => (tags = newTags)"
                 />
               </div>
@@ -131,14 +132,39 @@ export default {
       },
       percent: "0.6",
       tag: "",
-      tags: []
+      tags: [],
+      sugg: []
     };
   },
   mounted() {
-    this.autocompleteTags;
+    let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
+    console.log(this.$parent.items);
+    let tagsAutoComplete = [];
+    local.forEach(element => {
+      element.tags.forEach(tagsElement => {
+        if (tagsElement.text.length) {
+          tagsAutoComplete.push(tagsElement);
+        }
+      });
+    });
+    console.log(_.uniqBy(tagsAutoComplete, "text"));
+
+    this.sugg = _.uniqBy(tagsAutoComplete, "text");
   },
   computed: {
-    autocompleteTags() {},
+    autocompleteTags() {
+      return _.slice(
+        this.sugg.filter(i => {
+          return (
+            _.deburr(i.text)
+              .toLowerCase()
+              .indexOf(_.deburr(this.tag).toLowerCase()) !== -1
+          );
+        }),
+        0,
+        10
+      );
+    },
     fItemsFiltered: function() {
       let t = this;
       let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
