@@ -3,9 +3,17 @@
     <h1 class="justify-center text-4xl my-5 text-center">{{title}}</h1>
 
     <div class="w-full flex justify-center">
-      <div class="w-1/2">
+      <div class="w-10/12">
+        <div class="w-full my-5">
+          <vuetable-pagination
+            ref="pagination"
+            @vuetable-pagination:change-page="onChangePage"
+            :css="css.pagination"
+          ></vuetable-pagination>
+        </div>
         <div>
-          <vuetable ref="vuetable"
+          <vuetable
+            ref="vuetable"
             :api-mode="false"
             :fields="fields"
             :per-page="perPage"
@@ -13,26 +21,7 @@
             pagination-path="pagination"
             @vuetable:pagination-data="onPaginationData"
             class="w-full"
-          >
-            <div slot="actions" slot-scope="props">
-              <button 
-                class="ui small button" 
-                @click="onActionClicked('edit-item', props.rowData)"
-              >
-                <i class="edit icon">e</i>e
-              </button>
-              <button 
-                class="ui small button" 
-                @click="onActionClicked('delete-item', props.rowData)"
-              >
-                <i class="delete icon">b</i>b
-              </button>
-            </div>
-          </vuetable>
-        </div>
-        
-        <div class="w-full my-5">
-          <vuetable-pagination ref="pagination" @vuetable-pagination:change-page="onChangePage" :css="css.pagination"></vuetable-pagination>
+          ></vuetable>
         </div>
       </div>
     </div>
@@ -40,13 +29,12 @@
 </template>
 
 <script>
-import {Vuetable, VuetablePagination} from "vuetable-2";
+import { Vuetable, VuetablePagination } from "vuetable-2";
 
 import _ from "lodash";
 
 export default {
-  name: "default",
-  props: ['items'],
+  name: "listItems",
   components: {
     Vuetable,
     VuetablePagination
@@ -56,51 +44,46 @@ export default {
       title: "Lista de Temas",
       fields: [
         {
-          name:'tags',
-          title:'Tema',
-          sortField: 'tags',
-          titleClass: 'w-1/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
-        },{
-          name:'text',
-          title:'Texto',
-          sortField: 'text',
-          titleClass: 'w-2/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
+          name: "tags",
+          title: "Tema",
+          sortField: "tags",
+          titleClass: "w-1/3 px-4 py-2",
+          dataClass: "border px-4 py-2"
         },
         {
-          name:'actions',
-          title:'Actions',
-          titleClass: 'w-1/4 px-4 py-2',
-          dataClass: 'border px-4 py-2'
+          name: "text",
+          title: "Texto",
+          sortField: "text",
+          titleClass: "w-2/3 px-4 py-2",
+          dataClass: "border px-4 py-2"
         }
       ],
       perPage: 10,
-      data : [],
+      data: [],
       css: {
         pagination: {
-          wrapperClass: 'flex list-reset border border-grey-light rounded w-auto',
-          activeClass: 'active text-white bg-teal-500',
-          disabledClass: 'disabled',
-          pageClass: 'block text-blue border-r border-grey-light px-3 py-2',
-          linkClass: 'icon item',
-          paginationClass: 'ui bottom attached segment grid',
-          paginationInfoClass: 'left floated left aligned six wide column',
-          dropdownClass: 'ui search dropdown',
+          wrapperClass:
+            "flex list-reset border border-grey-light rounded w-auto",
+          activeClass: "active text-white bg-teal-500",
+          disabledClass: "disabled",
+          pageClass: "block text-blue border-r border-grey-light px-3 py-2",
+          linkClass: "icon item",
+          paginationClass: "ui bottom attached segment grid",
+          paginationInfoClass: "left floated left aligned six wide column",
+          dropdownClass: "ui search dropdown",
           icons: {
-            first: 'angle double left icon',
-            prev: 'left chevron icon',
-            next: 'right chevron icon',
-            last: 'angle double right icon',
+            first: "angle double left icon",
+            prev: "left chevron icon",
+            next: "right chevron icon",
+            last: "angle double right icon"
           }
         }
       }
     };
   },
-  watch: {
-    items: function(val){
-      this.$refs.vuetable.refresh()
-    }
+  mounted() {
+    this.data = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
+    this.$refs.vuetable.refresh();
   },
   methods: {
     onPaginationData(paginationData) {
@@ -110,24 +93,7 @@ export default {
       this.$refs.vuetable.changePage(page);
     },
     dataManager(sortOrder, pagination) {
-     
-      if (this.items.length < 1) return;
-
-      console.log(this.items);
-
-      let local = _.reverse(JSON.parse(JSON.stringify(this.items)));
-      
-      _.map(local, (o) => { 
-        const tags = o.tags;
-        
-        o.tags = [];
-        _.map(tags, (u) => { 
-          if(_.trim(u.text).length)
-            o.tags.push(u.text);
-        });
-        o.tags = _.join(o.tags,", ");
-        o.text = _.truncate(o.text, {'length': 40, 'separator': ' ','omission': ' [...]'})
-      });
+      let local = JSON.parse(JSON.stringify(this.data));
 
       if (sortOrder.length > 0) {
         local = _.orderBy(
@@ -141,13 +107,31 @@ export default {
         local.length,
         this.perPage
       );
-      
+
       let from = pagination.from - 1;
       let to = from + this.perPage;
 
+      local = _.slice(local, from, to);
+      _.map(local, o => {
+        const tags = o.tags;
+
+        o.tags = [];
+        _.map(tags, u => {
+          if (_.trim(u.text).length) o.tags.push(u.text);
+        });
+
+        o.tags = _.join(o.tags, ", ");
+        o.text = _.truncate(o.text, {
+          length: 70,
+          separator: " ",
+          omission: " [...]"
+        });
+      });
+
+      console.log(local);
       return {
         pagination: pagination,
-        data: _.slice(local, from, to)
+        data: local
       };
     },
     onActionClicked(action, data) {

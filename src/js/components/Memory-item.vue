@@ -26,44 +26,24 @@ export default {
   data() {
     return {
       title: "Estudiar",
-      compressedText: "",
-      noCompressedText: "",
       fullText: "",
-      compressedTags: "",
       show: false
     };
   },
-  mounted() {
-    this.compressText();
-    this.compressTags();
-  },
-  watch: {
-    percent: function() {
-      this.compressText();
-      this.compressTags();
-    },
-    filter: function() {
-      this.compressText();
-      this.compressTags();
-    }
-  },
-  methods: {
-    showHide() {
-      this.show = !this.show;
+  computed: {
+    noCompressedText() {
+      return this.item.text.replace(/\r?\n/g, " <br /> ");
     },
 
-    compressTags() {
+    compressedTags() {
       let tagsText = [];
-
       _.map(this.item.tags, u => {
         if (_.trim(u.text).length) tagsText.push(u.text);
       });
-
-      this.compressedTags = _.join(tagsText, ", ");
+      return _.join(tagsText, ", ");
     },
 
-    compressText() {
-      this.noCompressedText = this.item.text.replace(/\r?\n/g, " <br /> ");
+    compressedText() {
       let array = _.split(this.noCompressedText, " ");
       let regex = /^[\S]*[0-9]+[\S]*$/;
       let limit = 3;
@@ -97,7 +77,12 @@ export default {
           }
         }
       }
-      this.compressedText = array.join(" ");
+      return array.join(" ");
+    }
+  },
+  methods: {
+    showHide() {
+      this.show = !this.show;
     }
   }
 };

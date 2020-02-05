@@ -2,10 +2,7 @@
   <div>
     <h1 class="justify-center text-4xl my-5 text-center">{{ title }}</h1>
     <div class="flex w-full justify-center">
-      <form
-        v-on:submit.prevent="saveText"
-        class="my-10 block w-6/12 justify-center"
-      >
+      <form v-on:submit.prevent="saveText" class="my-10 block w-6/12 justify-center">
         <div>
           <label
             class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
@@ -45,9 +42,7 @@
             <button
               class="shadow bg-teal-500 hover:bg-teal-400 focus:shadow-outline focus:outline-none text-white font-bold py-2 px-4 rounded"
               type="submit"
-            >
-              Enviar
-            </button>
+            >Enviar</button>
           </div>
         </div>
       </form>
@@ -75,23 +70,15 @@ export default {
   },
   methods: {
     addItem: function(tags, text) {
-      if (Array.isArray(this.items)) {
-        console.log({
-          tags: tags,
-          text: text
-        });
-
-        this.$parent.addItem(
-          JSON.parse(
-            JSON.stringify({
-              tags: tags,
-              text: text
-            })
-          )
-        );
-
-        this.$emit("addItem", this.items);
-      }
+      this.$parent.addItem(
+        JSON.parse(
+          JSON.stringify({
+            tags: tags,
+            text: text
+          })
+        )
+      );
+      this.$parent.addItem(this.items);
     },
     saveText: function(event) {
       if (_.startsWith(_.trim(this.text), "<?xml")) {

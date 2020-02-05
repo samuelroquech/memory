@@ -113,8 +113,7 @@ import memoryItem from "./Memory-item.vue";
 import VueTagsInput from "@johmun/vue-tags-input";
 
 export default {
-  name: "default",
-  props: ["items"],
+  name: "memory",
   components: {
     swiper,
     swiperSlide,
@@ -132,15 +131,17 @@ export default {
       },
       percent: "0.6",
       tag: "",
-      tags: [],
-      itemsFiltered: []
+      tags: []
     };
   },
+  mounted() {
+    this.autocompleteTags;
+  },
   computed: {
+    autocompleteTags() {},
     fItemsFiltered: function() {
       let t = this;
-      console.log(this.$parent.items);
-      let local = _.reverse(this.$parent.items);
+      let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
 
       let array = _.filter(local, function(o) {
         if (t.tags.length > 0) {
@@ -150,13 +151,9 @@ export default {
         return true;
       });
 
-      return _.slice(array, 3);
-    },
-    getItems: function() {
-      return this.$parent.getItems();
+      return _.slice(array, 0, 20);
     }
   },
-
   methods: {}
 };
 </script>
