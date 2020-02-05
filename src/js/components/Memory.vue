@@ -30,17 +30,11 @@
                   class="block appearance-none w-full bg-gray-200 border border-gray-200 text-gray-700 py-3 px-4 pr-8 rounded leading-tight focus:outline-none focus:bg-white focus:border-gray-500"
                   v-model.lazy="percent"
                 >
-                  <option value="0.99">1%</option>
-                  <option value="0.9">10%</option>
-                  <option value="0.8">20%</option>
-                  <option value="0.7">30%</option>
-                  <option value="0.6">40%</option>
-                  <option value="0.5">50%</option>
-                  <option value="0.4" selected>60%</option>
-                  <option value="0.3">70%</option>
-                  <option value="0.2">80%</option>
-                  <option value="0.1">90%</option>
-                  <option value="0.01">99%</option>
+                  <option
+                    v-for="(option, index) in perValues"
+                    v-bind:value="option"
+                    :key="index"
+                  >{{option }}</option>
                 </select>
                 <div
                   class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
@@ -130,11 +124,17 @@ export default {
           prevEl: ".mem-swiper-prev"
         }
       },
-      percent: "0.6",
+      percent: 0.6,
       tag: "",
       tags: [],
-      sugg: []
+      sugg: [],
+      perValues: [0.01, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.99]
     };
+  },
+  watch: {
+    percent(newItem) {
+      localStorage.percent = newItem;
+    }
   },
   mounted() {
     let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
@@ -147,9 +147,11 @@ export default {
         }
       });
     });
-    console.log(_.uniqBy(tagsAutoComplete, "text"));
-
     this.sugg = _.uniqBy(tagsAutoComplete, "text");
+
+    if (localStorage.percent) {
+      this.percent = localStorage.percent;
+    }
   },
   computed: {
     autocompleteTags() {
@@ -165,6 +167,7 @@ export default {
         10
       );
     },
+
     fItemsFiltered: function() {
       let t = this;
       let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));

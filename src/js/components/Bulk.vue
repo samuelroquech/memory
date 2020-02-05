@@ -65,7 +65,7 @@ export default {
       if (f) {
         var r = new FileReader();
         r.onload = function(e) {
-          var contents = e.target.result;
+          var contents = _.trim(e.target.result);
           var lines = t.CSVToArray(contents);
           t.$parent.clearItems();
 
