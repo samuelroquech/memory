@@ -44,8 +44,7 @@ export default {
     },
 
     compressedText() {
-      let array = _.split(this.noCompressedText, " ");
-      let regex = /^[\S]*[0-9]+[\S]*$/;
+      let array = _.split(this.noCompressedText, /\s*(\s|,|\.)\s*/g);
       let limit = 3;
       let values = [];
 

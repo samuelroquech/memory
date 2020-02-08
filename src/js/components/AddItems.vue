@@ -112,6 +112,14 @@ export default {
         {
           text: "",
           tiClasses: ["ti-valid"]
+        },
+        {
+          text: "",
+          tiClasses: ["ti-valid"]
+        },
+        {
+          text: "",
+          tiClasses: ["ti-valid"]
         }
       ];
       let currentText = "";
@@ -123,17 +131,28 @@ export default {
           if (currentText.length) {
             this.addItem(currentTags, currentText);
             currentText = "";
+            currentTags[1].text = "";
+            currentTags[2].text = "";
           }
           currentTags[0].text = element.innerHTML;
         } else if (element.classList.contains("titulo_tit")) {
           currentTags[1].text = element.innerHTML;
+        } else if (element.classList.contains("capitulo_num")) {
+          currentTags[2].text = element.innerHTML;
+        } else if (element.classList.contains("capitulo_tit")) {
+          currentTags[3].text = element.innerHTML;
         } else if (element.classList.contains("articulo")) {
           if (currentText.length) {
             this.addItem(currentTags, currentText);
             currentText = "";
           }
-          currentTags[2].text = element.innerHTML;
-        } else if (element.classList.contains("parrafo")) {
+          currentTags[4].text = element.innerHTML;
+        } else if (
+          _.filter(element.classList, function(o) {
+            return !_.startsWith(o, "parrafo");
+          })
+        ) {
+          console.log(element.classList.contains("parrafo_2"));
           if (currentText.length) {
             currentText += "\n";
           }
