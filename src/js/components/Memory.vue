@@ -138,7 +138,6 @@ export default {
   },
   mounted() {
     let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
-    console.log(this.$parent.items);
     let tagsAutoComplete = [];
     local.forEach(element => {
       element.tags.forEach(tagsElement => {
@@ -170,7 +169,8 @@ export default {
 
     fItemsFiltered: function() {
       let t = this;
-      let local = _.reverse(JSON.parse(JSON.stringify(this.$parent.items)));
+      let local = JSON.parse(JSON.stringify(this.$parent.items));
+      if (!this.tags.length) local = _.reverse(local);
 
       let array = _.filter(local, function(o) {
         if (t.tags.length > 0) {
@@ -181,6 +181,7 @@ export default {
       });
 
       if (!this.tags.length) array = _.slice(array, 0, 20);
+      else array = _.slice(array, 0, 50);
 
       return array;
     }

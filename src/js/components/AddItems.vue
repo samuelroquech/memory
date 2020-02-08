@@ -99,7 +99,6 @@ export default {
     parseXML: function(text) {
       let parser = new DOMParser();
       let xmlDoc = parser.parseFromString(text, "text/xml");
-      this.$parent.clearItems();
       let currentTags = [
         {
           text: "",
@@ -123,45 +122,62 @@ export default {
         }
       ];
       let currentText = "";
-      xmlDoc.getElementsByTagName("texto")[0].childNodes.forEach(element => {
-        if (_.startsWith(element.nodeName, "#")) return;
-        if (element.classList.contains("titulo")) {
-          currentTags[0].text = element.innerHTML;
-        } else if (element.classList.contains("titulo_num")) {
-          if (currentText.length) {
-            this.addItem(currentTags, currentText);
-            currentText = "";
-            currentTags[1].text = "";
-            currentTags[2].text = "";
-          }
-          currentTags[0].text = element.innerHTML;
-        } else if (element.classList.contains("titulo_tit")) {
-          currentTags[1].text = element.innerHTML;
-        } else if (element.classList.contains("capitulo_num")) {
-          currentTags[2].text = element.innerHTML;
-        } else if (element.classList.contains("capitulo_tit")) {
-          currentTags[3].text = element.innerHTML;
-        } else if (element.classList.contains("articulo")) {
-          if (currentText.length) {
-            this.addItem(currentTags, currentText);
-            currentText = "";
-          }
-          currentTags[4].text = element.innerHTML;
-        } else if (
-          _.filter(element.classList, function(o) {
-            return !_.startsWith(o, "parrafo");
-          })
-        ) {
-          console.log(element.classList.contains("parrafo_2"));
-          if (currentText.length) {
-            currentText += "\n";
-          }
-          currentText += element.innerHTML;
-        }
-      });
 
-      if (currentText.length) {
-        this.addItem(currentTags, currentText);
+      let container = xmlDoc.getElementsByTagName("texto");
+      if (!container.length)
+        container = xmlDoc.getElementsByTagName("documento");
+
+      if (container.length) {
+        this.$parent.clearItems();
+
+        container[0].childNodes.forEach(element => {
+          if (_.startsWith(element.nodeName, "#")) return;
+          if (element.classList.contains("titulo")) {
+            currentTags[0].text = element.innerHTML;
+          } else if (element.classList.contains("titulo_num")) {
+            if (currentText.length) {
+              this.addItem(currentTags, currentText);
+              currentText = "";
+              currentTags[1].text = "";
+              currentTags[2].text = "";
+            }
+            currentTags[0].text = element.innerHTML;
+          } else if (element.classList.contains("titulo_tit")) {
+            currentTags[1].text = element.innerHTML;
+          } else if (element.classList.contains("capitulo_num")) {
+            currentTags[2].text = element.innerHTML;
+          } else if (element.classList.contains("capitulo_tit")) {
+            currentTags[3].text = element.innerHTML;
+          } else if (element.classList.contains("articulo")) {
+            if (currentText.length) {
+              this.addItem(currentTags, currentText);
+              currentText = "";
+            }
+            currentTags[4].text = element.innerHTML;
+          } else if (element.classList.contains("sangrado")) {
+            if (currentText.length) {
+              currentText += "\n";
+            }
+            currentText += "&emsp;" + element.innerHTML;
+          } else if (
+            _.filter(element.classList, function(o) {
+              return !(
+                _.startsWith(o, "parrafo") && _.startsWith(0, "sangrado")
+              );
+            })
+          ) {
+            if (currentText.length) {
+              currentText += "\n";
+            }
+            currentText += element.innerHTML;
+          }
+        });
+
+        if (currentText.length) {
+          this.addItem(currentTags, currentText);
+        }
+      } else {
+        console.warn("Container not found");
       }
     }
   }
